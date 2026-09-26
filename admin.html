@@ -24,32 +24,46 @@
         </form>
         <p id="msg"></p>
     </div>
-    <script>
-        document.getElementById('form').addEventListener('submit', async (e) => {
+        <script>
+        const form = document.getElementById('subForm'); // හෝ id එක 'form' නම් එය වෙනස් කරන්න
+        const msg = document.getElementById('msg');
+
+        document.getElementById('subForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const title = document.getElementById('title').value;
             const episode = document.getElementById('episode').value;
             const directLink = document.getElementById('directLink').value;
             const telegramLink = document.getElementById('telegramLink').value;
-            const msg = document.getElementById('msg');
-            msg.innerText = 'යවමින් පවතී...';
+
+            msg.style.color = '#ff0';
+            msg.innerText = 'යවමින් පවතී... ⏳';
 
             try {
-                // මෙතනට Vercel වලට දැකපු Admin සයිට් එකේ ලින්ක් එක දෙන්න ඕන (පස්සේ)
-                const res = await fetch(`/api/add?title=${encodeURIComponent(title)}&episode=${encodeURIComponent(episode)}&directLink=${encodeURIComponent(directLink)}&telegramLink=${encodeURIComponent(telegramLink)}`);
-                if(res.ok) {
+                const res = await fetch('/api/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title, episode, directLink, telegramLink })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
                     msg.style.color = '#00ff00';
-                    msg.innerText = '✅ සාර්ථකයි!';
-                    document.getElementById('form').reset();
+                    msg.innerText = '✅ සාර්ථකයි! සබ් එක ඇඩ් උනා.';
+                    document.getElementById('subForm').reset();
                 } else {
                     msg.style.color = 'red';
-                    msg.innerText = '❌ දෝෂයක් සිදු විය!';
+                    msg.innerText = '❌ දෝෂයක්: ' + (data.error || 'Unknown error');
                 }
-            } catch(err) {
+            } catch (err) {
+                console.error(err);
                 msg.style.color = 'red';
-                msg.innerText = '❌ සර්වර් දෝෂයක්!';
+                msg.innerText = '❌ සර්වර් දෝෂයක් සිදු විය!';
             }
         });
     </script>
+
 </body>
 </html>
