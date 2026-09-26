@@ -21,12 +21,23 @@ const subSchema = new mongoose.Schema({
 });
 const Subtitle = mongoose.model('Subtitle', subSchema);
 
+// 1. සබ්ස් ඇඩ් කිරීමට
 app.get('/api/add', async (req, res) => {
     try {
         const { title, episode, directLink, telegramLink } = req.query;
         const newSub = new Subtitle({ title, episode, directLink, telegramLink });
         await newSub.save();
         res.json({ message: "Added successfully!" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 2. දාලා තියෙන සියලුම සබ්ස් ලබා ගැනීමට (ප්‍රධාන වෙබ් අඩවිය සඳහා)
+app.get('/api/subtitles', async (req, res) => {
+    try {
+        const subs = await Subtitle.find().sort({ _id: -1 });
+        res.json(subs);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
