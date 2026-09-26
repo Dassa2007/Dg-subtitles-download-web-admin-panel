@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        body { font-family: sans-serif; background: #0f0f0f; color: #fff; padding: 20px; }
+        .box { max-width: 400px; margin: 40px auto; background: #1a1a1a; padding: 20px; border-radius: 8px; border: 1px solid #333; }
+        input { width: 100%; padding: 10px; margin-bottom: 15px; background: #2a2a2a; border: 1px solid #444; color: #fff; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #e50914; color: #fff; border: none; font-weight: bold; cursor: pointer; }
+        #msg { text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2 style="color: #e50914; text-align: center;">🔐 Admin Panel</h2>
+        <form id="form">
+            <input type="text" id="title" placeholder="චිත්‍රපටයේ නම" required>
+            <input type="text" id="episode" placeholder="Episode" required>
+            <input type="text" id="directLink" placeholder="Direct Link" required>
+            <input type="text" id="telegramLink" placeholder="Telegram Link" required>
+            <button type="submit">ಸබ් එක ඇඩ් කරන්න</button>
+        </form>
+        <p id="msg"></p>
+    </div>
+    <script>
+        document.getElementById('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const episode = document.getElementById('episode').value;
+            const directLink = document.getElementById('directLink').value;
+            const telegramLink = document.getElementById('telegramLink').value;
+            const msg = document.getElementById('msg');
+            msg.innerText = 'යවමින් පවතී...';
+
+            try {
+                // මෙතනට Vercel වලට දැකපු Admin සයිට් එකේ ලින්ක් එක දෙන්න ඕන (පස්සේ)
+                const res = await fetch(`/api/add?title=${encodeURIComponent(title)}&episode=${encodeURIComponent(episode)}&directLink=${encodeURIComponent(directLink)}&telegramLink=${encodeURIComponent(telegramLink)}`);
+                if(res.ok) {
+                    msg.style.color = '#00ff00';
+                    msg.innerText = '✅ සාර්ථකයි!';
+                    document.getElementById('form').reset();
+                } else {
+                    msg.style.color = 'red';
+                    msg.innerText = '❌ දෝෂයක් සිදු විය!';
+                }
+            } catch(err) {
+                msg.style.color = 'red';
+                msg.innerText = '❌ සර්වර් දෝෂයක්!';
+            }
+        });
+    </script>
+</body>
+</html>
